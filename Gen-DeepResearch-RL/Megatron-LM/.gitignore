@@ -1,0 +1,17 @@
+__pycache__
+*.so
+build
+.coverage_*
+*.egg-info
+*~
+slurm*
+logs
+.vscode
+local/
+.gitmodules
+wandb/
+onelogger.log
+onelogger.err
+.venv
+test_cases/
+runs/

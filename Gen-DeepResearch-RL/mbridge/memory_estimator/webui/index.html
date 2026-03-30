@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megatron Memory Estimator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Megatron Memory Estimator v0.13</h1>
+        <div class="disclaimer-banner">
+    Note: This estimator only measures the GPU memory directly managed by PyTorch when running Megatron. It does not include extra consumption from NCCL communication buffers, kernel fusion, overlap optimizations, CUDA Graphs, etc. Please use the "Overhead per GPU" option below to account for these additional costs.
+</div>
+        
+        <div class="main-layout">
+            <div class="top-section">
+                <div class="config-column">
+                    <form id="config-form">
+                <h2>Configuration</h2>
+                <p class="config-hint" style="font-size: 0.9em; color: #666; margin-top: -0.5em; margin-bottom: 1em;">
+                    For detailed explanations of each parameter, please see the&nbsp;<a href="https://github.com/NVIDIA/Megatron-LM/blob/core_r0.13.0/megatron/training/arguments.py#L2266" target="_blank">Megatron-LM arguments documentation</a>.
+                </p>
+                        <div class="form-group">
+                            <label for="model-select">Select a Local Config:</label>
+                            <select id="model-select" name="model">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+
+                        <!-- All settings are now in one block -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="num-gpus">Total GPUs:</label>
+                                <input type="number" id="num-gpus" name="num_gpus" value="8" step="8" min="8">
+                            </div>
+                    <div class="form-group">
+                                <label for="mbs">micro batch size:</label>
+                                <input type="number" id="mbs" name="mbs" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                                <label for="seq-len">SeqLen:</label>
+                                <input type="number"id="seq-len" name="seq-len" value="4096" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="checkbox" id="use-distributed-optimizer" name="use_distributed_optimizer" checked>
+                            <label for="use-distributed-optimizer" class="inline-label">Use Distributed Optimizer</label>
+                        </div>
+
+                        <!-- 新增：Embedding/Loss Pipeline Split 选项 -->
+                        <div class="form-group vpp-dependent" style="display: none;">
+                            <input type="checkbox" id="account_for_embedding_in_pipeline_split" name="account_for_embedding_in_pipeline_split">
+                            <label for="account_for_embedding_in_pipeline_split" class="inline-label">Account for Embedding in PP Split</label>
+                        </div>
+                        <div class="form-group vpp-dependent" style="display: none;">
+                            <input type="checkbox" id="account_for_loss_in_pipeline_split" name="account_for_loss_in_pipeline_split">
+                            <label for="account_for_loss_in_pipeline_split" class="inline-label">Account for Loss in PP Split</label>
+                        </div>
+                        <!-- 选项结束 -->
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recompute-granularity">Recomputation:</label>
+                                <select id="recompute-granularity" name="recompute_granularity">
+                                    <option value="none">None</option>
+                                    <option value="selective">Selective</option>
+                                    <option value="full">Full</option>
+                                </select>
+                            </div>
+                            <div class="form-group recompute-options" style="display: none;">
+                                <label for="recompute-method">Method:</label>
+                                <select id="recompute-method" name="recompute_method">
+                                    <option value="uniform">Uniform</option>
+                                    <option value="block">Block</option>
+                                </select>
+                            </div>
+                            <div class="form-group recompute-options" style="display: none;">
+                                <label for="recompute-num-layers">Layers:</label>
+                                <input type="number" id="recompute-num-layers" name="recompute_num_layers" value="1" min="1">
+                            </div>
+                        </div>
+
+                        <!-- 新增：Selective Recompute 模块选择 -->
+                        <div class="form-row selective-options" style="display: none;">
+                            <div class="form-group">
+                                <label><input type="checkbox" name="recompute_modules" value="core_attn"> core_attn</label>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="recompute_modules" value="moe_act"> moe_act</label>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="recompute_modules" value="layernorm"> layernorm</label>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="recompute_modules" value="mla_up_proj"> mla_up_proj</label>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="recompute_modules" value="mlp"> mlp</label>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" name="recompute_modules" value="moe"> moe</label>
+                            </div>
+                        </div>
+                        <!-- Selective Recompute 结束 -->
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tp">TP:</label>
+                                <select id="tp" name="tp"></select>
+                    </div>
+                    <div class="form-group">
+                                <label for="pp">PP:</label>
+                        <input type="number" id="pp" name="pp" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                                <label for="ep">EP:</label>
+                                <select id="ep" name="ep"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="cp">CP:</label>
+                                <select id="cp" name="cp"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vpp">VPP:</label>
+                                <input type="number" id="vpp" name="vpp" placeholder="None" min="1">
+                    </div>
+                    <div class="form-group">
+                                <label for="etp">ETP:</label>
+                                <input type="number" id="etp" name="etp" placeholder="None" min="1">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="num_layers_in_first_pipeline_stage">First Stage Layers:</label>
+                                <input type="number" id="num_layers_in_first_pipeline_stage" name="num_layers_in_first_pipeline_stage" placeholder="None" min="0">
+                    </div>
+                    <div class="form-group">
+                                <label for="num_layers_in_last_pipeline_stage">Last Stage Layers:</label>
+                                <input type="number" id="num_layers_in_last_pipeline_stage" name="num_layers_in_last_pipeline_stage" placeholder="None" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="overhead">Overhead per GPU:</label>
+                                <select id="overhead" name="overhead">
+                                    <option value="5">5GB</option>
+                                    <option value="10" selected>10GB</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Pipeline Layout Row Added -->
+                        <div class="form-row">
+                            <div class="form-group" style="width: 100%;">
+                                <label for="pipeline-layout">Pipeline Layout (comma-separated layers per stage):</label>
+                                <input type="text" id="pipeline-layout" name="pipeline_model_parallel_layout" placeholder="e.g., Et|(tt|)*30L">
+                            </div>
+                        </div>
+                        <!-- End Pipeline Layout Row -->
+
+                        <div id="validation-message" class="error-message" style="display: none;"></div>
+                        <div class="button-container">
+                            <button type="submit">Estimate</button>
+                    </div>
+                </form>
+                </div>
+
+                <div class="output-column">
+                    <div class="config-editor-wrapper">
+                        <h2>Model Config (Editable)</h2>
+                        <textarea id="config-editor" rows="20"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-section">
+                <div id="output-container">
+                    <div id="loading" style="display: none;">Calculating...</div>
+                    <div id="history-wrapper">
+                        <h3>History</h3>
+                        <table id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Weight Gradient Optimizer (GB)</th>
+                                    <th>Activation (GB)</th>
+                                    <th>Total (GB/GPU)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <button id="clear-history" style="margin-top: 1em;">Clear History</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <footer class="footer">
+        <p>&copy; 2025 <a href="https://github.com/ISEEKYAN" target="_blank">ISEEKYAN</a>. Developed at NVIDIA.</p>
+    </footer>
+</body>
+</html> 
