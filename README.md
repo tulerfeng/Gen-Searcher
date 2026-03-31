@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://gen-searcher.vercel.app/">[🌐 Project Page]</a> &nbsp;&nbsp;
-  <a href="">[📖 Paper]</a>
+  <a href="https://arxiv.org/pdf/2603.28767">[📖 Paper]</a>
 </p>
 
 
