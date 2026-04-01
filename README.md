@@ -224,3 +224,12 @@ We sincerely appreciate the contributions of the open-source community. The rela
 ## Citations
 
 If you find our work helpful for your research, please consider citing our work.   
+
+```
+@article{feng2026gensearcher,
+  title={Gen-Searcher: Reinforcing Agentic Search for Image Generation},
+  author={Feng, Kaituo and Zhang, Manyuan and Chen, Shuang and Lin, Yunlong and Fan, Kaixuan and Jiang, Yilei and Li, Hongyu and Zheng, Dian and Wang, Chenyang and Yue, Xiangyu},
+  journal={arXiv preprint arXiv:2603.28767},
+  year={2026}
+}
+```
