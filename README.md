@@ -232,4 +232,11 @@ If you find our work helpful for your research, please consider citing our work.
   journal={arXiv preprint arXiv:2603.28767},
   year={2026}
 }
+
+@article{chen2026unify,
+  title={Unify-Agent: A Unified Multimodal Agent for World-Grounded Image Synthesis},
+  author={Chen, Shuang and Shou, Quanxin and Chen, Hangting and Zhou, Yucheng and Feng, Kaituo and Hu, Wenbo and Zhang, Yi-Fan and Lin, Yunlong and Huang, Wenxuan and Song, Mingyang and others},
+  journal={arXiv preprint arXiv:2603.29620},
+  year={2026}
+}
 ```
