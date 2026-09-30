@@ -112,7 +112,11 @@ def _text_search_sync(queries: List[str], topk: int = 10, max_retry: int = 100) 
 
             except Exception as e:
                 print(f"[Search] _text_search_sync retry={retry} query={q_clean!r} error: {e}", flush=True)
-                if retry == max_retry - 1:
+                # Connection errors and timeouts are usually not transient:
+                # retrying a dead endpoint to max_retry (default 100) stalls a
+                # rollout worker for minutes per query. Give up after 10 hard
+                # failures; a brief hiccup still gets 10 chances.
+                if retry >= 9:
                     results.append(f"Search failed for '{q_clean}': {e}")
                     appended = True
                 else:
