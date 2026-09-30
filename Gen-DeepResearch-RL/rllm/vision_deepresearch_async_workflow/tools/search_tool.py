@@ -36,11 +36,16 @@ class SearchTool(DeepResearchTool):
         )
         self.zhipu_api_key = os.getenv("ZHIPU_API_KEY")
         self.serp_api_key = os.getenv("SERP_API_KEY")
+        # Each provider has its own endpoint env var. TEXT_SEARCH_URL is kept
+        # as a shared fallback for backward compatibility; without it, setting
+        # one provider's URL no longer redirects the other provider's requests.
         self.zhipu_search_url = os.getenv(
-            "TEXT_SEARCH_URL", "https://search-svip.bigmodel.cn/api/paas/v4/search"
+            "ZHIPU_SEARCH_URL",
+            os.getenv("TEXT_SEARCH_URL", "https://search-svip.bigmodel.cn/api/paas/v4/search"),
         )
         self.serp_search_url = os.getenv(
-            "TEXT_SEARCH_URL", "https://google.serper.dev/search"
+            "SERP_SEARCH_URL",
+            os.getenv("TEXT_SEARCH_URL", "https://google.serper.dev/search"),
         )
 
     def contains_chinese(self, text: str) -> bool:
