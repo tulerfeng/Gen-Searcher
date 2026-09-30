@@ -49,7 +49,9 @@ def register_service(service_name, service_type, port):
     }
     
     # Write YAML file
-    os.makedirs(os.path.dirname(yaml_file), exist_ok=True)
+    yaml_dir = os.path.dirname(yaml_file)
+    if yaml_dir:
+        os.makedirs(yaml_dir, exist_ok=True)
     with open(yaml_file, 'w', encoding='utf-8') as f:
         yaml.dump(services, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
     
